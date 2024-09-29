@@ -1,3 +1,4 @@
+use std::sync::Mutex;
 pub struct Display {
     w_pixels: [bool; 64],
     v_pixels: [bool; 32],
@@ -23,6 +24,23 @@ impl ProgramCounter {
         } else {
             self.counter += 1;
             Ok(())
+        }
+    }
+}
+
+impl Timer {
+    pub fn new() -> Self {
+        Timer { delay: 0 }
+    }
+    pub fn active(&self) -> bool {
+        self.delay > 0
+    }
+    pub fn dec(&mut self) -> u8 {
+        if self.delay > 0 {
+            self.delay -= 1;
+            return self.delay;
+        } else {
+            0
         }
     }
 }
