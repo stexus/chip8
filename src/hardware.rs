@@ -15,19 +15,39 @@ pub struct ProgramCounter {
     counter: u16,
 }
 
-struct PCOverflow;
+#[derive(Debug)]
+pub enum Exception {
+    PCOverflow,
+}
 impl ProgramCounter {
     pub fn new() -> Self {
-        ProgramCounter { counter: 0 }
+        ProgramCounter { counter: 0x200 }
     }
-    pub fn inc(&mut self) -> Result<(), PCOverflow> {
+    pub fn get(&self) -> u16 {
+        self.counter
+    }
+    pub fn inc(&mut self) -> Result<(), Exception> {
         let max_pc = 2u16.pow(12) - 1;
         if self.counter == max_pc {
-            Err(PCOverflow)
+            Err(Exception::PCOverflow)
         } else {
             self.counter += 2;
             Ok(())
         }
+    }
+}
+
+impl Memory {
+    pub fn new() -> Self {
+        Memory {
+            sp: 0,
+            mem: [0; 4096],
+        }
+    }
+    pub fn fetch_instruction(&self, pc: &mut ProgramCounter) -> u8 {
+        let lo = self.mem[pc.get() as usize];
+        let hi = self.mem[pc.get() as usize + 1];
+        hi << 4 | lo
     }
 }
 
