@@ -17,12 +17,15 @@ pub struct ProgramCounter {
 
 struct PCOverflow;
 impl ProgramCounter {
-    fn inc(&mut self) -> Result<(), PCOverflow> {
+    pub fn new() -> Self {
+        ProgramCounter { counter: 0 }
+    }
+    pub fn inc(&mut self) -> Result<(), PCOverflow> {
         let max_pc = 2u16.pow(12) - 1;
         if self.counter == max_pc {
             Err(PCOverflow)
         } else {
-            self.counter += 1;
+            self.counter += 2;
             Ok(())
         }
     }
