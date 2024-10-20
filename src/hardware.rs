@@ -18,6 +18,7 @@ pub struct ProgramCounter {
 #[derive(Debug)]
 pub enum Exception {
     PCOverflow,
+    BadOp,
 }
 impl ProgramCounter {
     pub fn new() -> Self {

@@ -2,6 +2,7 @@
 use chip8::hardware::*;
 use chip8::wires::*;
 
+use std::array;
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -31,8 +32,38 @@ fn fetch(pc: &mut ProgramCounter, mem: &Memory) -> Result<u8, Exception> {
         Ok(()) => Ok(raw_inst),
     }
 }
+// remember this is BIG ENDIAN
+// raw_inst[0] = most significant byte  (mask with 0x00ff)
+// raw_inst[1] = least significant byte (mask with 0xff00)
 fn decode(raw_inst: u8) -> Result<Instruction, Exception> {
-    todo!()
+    // nibbles[0] will be the least significant bit
+    let nibbles_raw: [u8; 4] = array::from_fn(|i| raw_inst & (0x000f << (i * 4)) >> (i * 4));
+    let mut nibbles = nibbles_raw;
+    nibbles.reverse();
+    match &nibbles[3] {
+        0 => match (nibbles[1], nibbles[0]) {
+            (0xE, 0xE) => Instruction::new(Operation::RET, &nibbles),
+            (0xE, 0) => Instruction::new(Operation::CLS, &nibbles),
+            _ => Instruction::new(Operation::SYS, &nibbles),
+        },
+        1 => todo!(),
+        2 => todo!(),
+        3 => todo!(),
+        4 => todo!(),
+        5 => todo!(),
+        6 => todo!(),
+        7 => todo!(),
+        8 => todo!(),
+        9 => todo!(),
+        0xA => todo!(),
+        0xB => todo!(),
+        0xC => todo!(),
+        0xD => todo!(),
+        0xE => todo!(),
+        0xF => todo!(),
+        _ => Err(Exception::BadOp),
+    }
+    Ok(())
 }
 //might just need a bool return (is_timer)
 fn execute(inst: Instruction) -> Result<ReturnCode, Exception> {
